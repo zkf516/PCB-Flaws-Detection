@@ -13,6 +13,7 @@ class PostgresModel:
         conn.commit()
         cur.close()
         conn.close()
+        
     def connect(self):
         conn = psycopg2.connect(
             dbname=os.environ["DB_NAME"],
@@ -22,17 +23,23 @@ class PostgresModel:
             port=os.environ["DB_PORT"]
         )
         return conn
+    
     def get_all_histories(self,page,limit,date_string):
+        if date_string is None:
+            date_string = ""  # ""+'%' to match all dates
         conn = self.connect()
         cur = conn.cursor()
         if page is None:
             cur.execute("SELECT image_id,json_data FROM history WHERE image_id LIKE %s ORDER BY image_id DESC", (date_string + '%',))
         else:
+            if limit is None:
+                limit = 10 # default limit to prevent SQL errors
             cur.execute("SELECT image_id,json_data FROM history WHERE image_id LIKE %s ORDER BY image_id DESC LIMIT %s OFFSET %s", (date_string + '%', limit, (int(page)-1)*int(limit)))
         rows = cur.fetchall()
         cur.close()
         conn.close()
         return rows
+    
     def insert_inference_result(self,image_id,inference_json):
         conn = self.connect()
         cur = conn.cursor()
@@ -41,6 +48,7 @@ class PostgresModel:
         conn.commit()
         cur.close()
         conn.close()
+
     def get_inference_json(self,image_id):
         conn = self.connect()
         cur = conn.cursor()
@@ -48,4 +56,6 @@ class PostgresModel:
         row = cur.fetchone()
         cur.close()
         conn.close()
+        if row is None:
+            return None
         return json.loads(row[0])

@@ -1,6 +1,8 @@
 *.bmp
 *.png
+*.jpg
 .env
+data
 *.onnx
 __pycache__
 Dockerfile

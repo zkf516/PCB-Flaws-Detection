@@ -16,7 +16,6 @@ class WsServer(threading.Thread):
         threading.Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
-        
 
     def run(self):
         asyncio.set_event_loop(asyncio.new_event_loop())

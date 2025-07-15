@@ -4,6 +4,7 @@ from get_token import get_token
 class IotDeviceUtil:
     def __init__(self):
         pass
+
     def get_device_shadow(self,device_id):
         user_name = os.environ["USER_NAME"]
         user_password = os.environ["USER_PASSWORD"]
@@ -13,14 +14,22 @@ class IotDeviceUtil:
         token = get_token(user_name, user_password, domain_name, project_name,target_url)
         url = f'{os.environ["IOT_SERVICE_URL"]}/v5/iot/{os.environ["PROJECT_ID"]}/devices/{device_id}/shadow'
         # Send request.
+
         headers = {
             'X-Auth-Token': token,
         }
-        resp = requests.get(url, headers=headers)
-        # Print result.
+
+        try:
+            resp = requests.get(url, headers=headers)
+            resp.raise_for_status()  # Raise an error for HTTP errors
+        except requests.RequestException as e:
+            print(f"Error fetching device shadow: {e}")
+            return None
+        
         #print(resp.status_code)
         #print(resp.text)
         return resp
+    
     def get_all_devices(self):
         user_name = os.environ["USER_NAME"]
         user_password = os.environ["USER_PASSWORD"]
@@ -33,9 +42,14 @@ class IotDeviceUtil:
         headers = {
             'X-Auth-Token': token,
         }
-        resp = requests.get(url, headers=headers)
 
-        # Print result.
+        try:
+            resp = requests.get(url, headers=headers)
+            resp.raise_for_status()  # Raise an error for HTTP errors
+        except requests.RequestException as e:
+            print(f"Error fetching devices: {e}")
+            return None
+
         print(resp.status_code)
         print(resp.text)
         return resp

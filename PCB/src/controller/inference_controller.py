@@ -4,23 +4,17 @@ from flask import request
 import logging
 import sys
 import io
-
-import util.draw_boxes
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
-import numpy as np
-
-import traceback
 from PIL import Image
-
 import time
+import json
+import util.draw_boxes
+import util.inference_local_v9
+from backend_model.postgres import PostgresModel
 #import util.inference_token
 #import util.inference_ak_sk
-import util.inference_local_v9
-import json
-
-from backend_model.postgres import PostgresModel
-
 #from src.yolo_v9.utils.plots import Annotator, colors, save_one_box
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
 
 class InferenceController:
     def __init__(self) -> None:
@@ -28,17 +22,7 @@ class InferenceController:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    def ctrl_inference(self):
-        # 创建上传目录
-        os.makedirs(f"{os.getcwd()}/uploads", exist_ok=True)
-
-        # 接收并保存文件
-        file = request.files['file']
-        filetype = file.filename.split(".")[-1]
-        filename = time.strftime("%Y%m%d-%H%M%S.") + filetype
-        path = f"{os.getcwd()}/uploads/{filename}"
-        file.save(path)
-
+    def do_inference(self, path, filename):
         result = None
         source = None
 
@@ -51,6 +35,7 @@ class InferenceController:
                 "source": source
             }
             return result
+        
         # 使用本地模型推理
         self.local_model_busy = True
         self.logger.info("start edge inference")
@@ -82,11 +67,25 @@ class InferenceController:
 
         # 将检测结果标注在图上
         if result["success"]:
-            print("zkfDEBUG result:", result) 
+            # print("zkfDEBUG result:", result) 
             util.draw_boxes.draw_boxes(path, result["result"])
         return result
     
 
+    def ctrl_inference(self):
+        # 创建上传目录
+        os.makedirs(f"{os.getcwd()}/uploads", exist_ok=True)
+
+        # 接收并保存文件
+        file = request.files['file']
+        filetype = file.filename.split(".")[-1]
+        filename = time.strftime("%Y%m%d-%H%M%S.") + filetype
+        path = f"{os.getcwd()}/uploads/{filename}"
+        file.save(path)
+        self.logger.info(f"File saved to {path}")
+
+        result = self.do_inference(path, filename)
+        return result
 
     def ctrl_inference_binary(self):
         os.makedirs(f"{os.getcwd()}/uploads", exist_ok=True)
@@ -117,54 +116,11 @@ class InferenceController:
         image.save(path)
         self.logger.info("Image saved successfully")
 
-        result = None
-        source = None
-
-        if self.local_model_busy:
-            self.logger.info("local model is busy, return error")
-            result = {
-                "success": False,
-                "result": result,
-                "filename": f"{filename}",
-                "source": source
-            }
-            return result
-        # 使用本地模型推理
-        self.local_model_busy = True
-        self.logger.info("start edge inference")
-        try :
-            print("loading model" + os.environ["MODEL_PATH"])
-            local_model = util.inference_local_v9.InferenceLocalV9(os.environ["MODEL_PATH"])
-            result = local_model.infer(path)
-        except Exception as e:
-            self.logger.error(e)
-            result = {
-                "error_code": 500,
-                "error_msg": f"Internal Server Error, {e}"
-            }
-            self.local_model_busy = False
-        self.logger.info("finished edge inference")
-        self.local_model_busy = False
-        source = "Edge Server"
-        
-        # 构建响应
-        result = {
-            "success": True,
-            "result": result,
-            "filename": f"{filename}",
-            "source": source
-        }
-        
-        # 存储结果到数据库
-        PostgresModel().insert_inference_result(filename,result)
-        # 将检测结果标注在图上
-        if result["success"]:
-            util.draw_boxes.draw_boxes(path, result["result"])
+        # 调用推理方法
+        result = self.do_inference(path, filename)
         return result
 
-
-        
-        
+   
     def ctrl_inference_test(self):
         os.makedirs(f"{os.getcwd()}/uploads", exist_ok=True)
         # Get the file string from the request
@@ -175,45 +131,10 @@ class InferenceController:
         return result
     
     
-    def ctrl_inference_old(self):
-        os.makedirs(f"{os.getcwd()}/uploads", exist_ok=True)
-        # Get the file from the request
-        file = request.files['file']
-        filename = time.strftime("%Y%m%d-%H%M%S") + ".png"
-        path = f"{os.getcwd()}/uploads/{filename}"
-        file.save(path)
-        result = None
-        source = None
-        if self.local_model_busy:
-            self.logger.info("local model is busy")
-        else:
-            self.local_model_busy = True
-            self.logger.info("start edge inference")
-            result = self.model.infer(path)
-            self.logger.info("finished edge inference")
-            self.local_model_busy = False
-            source = "Edge Server"
-        if result.get("error_code"):
-            result = {
-                "success": False,
-                "result": result,
-                "filename": f"{filename}",
-                "source": source
-            }
-            return result
-        result = {
-            "success": True,
-            "result": result,
-            "filename": f"{filename}",
-            "source": source
-            }
-        PostgresModel().insert_inference_result(filename,result)
-        return result
-    
     def ctrl_get_all_histories(self):
         page = request.args.get("page")
         limit = request.args.get("limit")
-        date_string = str(request.args.get("date"))
+        date_string = request.args.get("date")
         result = PostgresModel().get_all_histories(page,limit,date_string)
         resp = []
         for row in result:
@@ -236,6 +157,12 @@ class InferenceController:
     def ctrl_get_one_history_result(self):
         image_id = request.args.get("image_id")
         result = PostgresModel().get_inference_json(image_id)
+        if result is None:
+            return {
+                "success": False,
+                "error_code": 404,
+                "error_msg": f"Image ID {image_id} not found"
+            }
         return {
             "success": True,
             "result": {

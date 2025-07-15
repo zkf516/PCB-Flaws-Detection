@@ -10,6 +10,11 @@ class IotController:
     def ctrl_get_device_shadow(self):
         device_id = request.args.get("device_id")
         resp = IotDeviceUtil().get_device_shadow(device_id)
+        if resp is None:
+            return {
+                "success": False,
+                "result": "Failed to fetch device shadow",
+            }
         if resp.status_code != 200:
             return {
                 "success": False,
@@ -21,6 +26,11 @@ class IotController:
         }
     def ctrl_get_all_devices(self):
         resp = IotDeviceUtil().get_all_devices()
+        if resp is None:
+            return {
+                "success": False,
+                "result": "Failed to fetch devices",
+            }
         if resp.status_code != 200:
             return {
                 "success": False,
