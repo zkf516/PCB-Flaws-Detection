@@ -1,0 +1,344 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F1F3F5"
+    android:gravity="center_horizontal"
+    android:fitsSystemWindows="true">
+
+    <!-- Tab内容区 -->
+    <FrameLayout
+        android:id="@+id/tabContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- 首页 Page0 -->
+        <LinearLayout
+            android:id="@+id/Page0"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#ecf0f1"
+            android:visibility="visible">
+
+            <!-- 实时监测 -->
+            <TextView
+                android:text="实时监测"
+                android:textSize="23sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"/>
+            <!-- 最近一次检测图片 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="8"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/ShishiImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/rounded_bg"
+                    android:visibility="visible"
+                    android:contentDescription="@string/last_image_desc"/>
+
+                <ProgressBar
+                    android:id="@+id/SHishiProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"/>
+            </FrameLayout>
+            <!-- 历史速览 -->
+            <TextView
+                android:text="@string/history_overview"
+                android:textSize="23sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"/>
+
+            <!-- 最近一次检测图片 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="8"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/lastImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/rounded_bg"
+                    android:visibility="visible"
+                    android:contentDescription="@string/last_image_desc"/>
+
+                <ProgressBar
+                    android:id="@+id/loadingProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"/>
+            </FrameLayout>
+
+            <!-- 最近图片轮播 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recentImagesRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/rounded_bg"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:orientation="vertical"/>
+
+            <!-- 异常弹窗 -->
+            <LinearLayout
+                android:id="@+id/dialogId"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:background="@drawable/dialog_bg"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dialogTitle"
+                    android:text="@string/find_message"
+                    android:textSize="23sp"
+                    android:layout_marginBottom="22dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dialogShow"
+                    android:text="@string/origin_errorNum"
+                    android:textSize="21sp"/>
+            </LinearLayout>
+
+            <!-- 全屏图片查看 -->
+            <FrameLayout
+                android:id="@+id/fullScreenContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#E6000000"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/fullScreenImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:background="@drawable/rounded_bg"
+                    android:contentDescription="@null"/>
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- Page1 拍照 -->
+        <LinearLayout
+            android:id="@+id/Page1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/Page1Title"
+                android:text="@string/please_photo"
+                android:textSize="25sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+            <!-- 相机预览区（需用自定义CameraView或第三方库实现） -->
+            <FrameLayout
+                android:id="@+id/cameraContainer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="7dp"
+                android:background="@android:color/transparent"/>
+
+            <Button
+                android:id="@+id/takePhotoBtn"
+                android:text="@string/take_photo"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
+
+        <!-- Page2 历史记录 -->
+        <LinearLayout
+            android:id="@+id/Page2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/Page2Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
+
+                <TextView
+                    android:id="@+id/Page2TitleText"
+                    android:text="@string/check_time"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"/>
+
+                <ImageView
+                    android:id="@+id/inputSearch"
+                    android:src="@drawable/ic_public_input_search"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@null"/>
+
+                <!-- 日期选择器（可用DatePickerDialog实现） -->
+                <EditText
+                    android:id="@+id/Page2Input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_input"
+                    android:textSize="15sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:hint="@string/choose_time"
+                    android:focusable="false"/>
+
+                <Button
+                    android:id="@+id/Page2Button"
+                    android:text="@string/search"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/white_smoke"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- 历史记录列表 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/historyList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="10dp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- 底部Tab栏 -->
+    <LinearLayout
+        android:baselineAligned="false"
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="#FFF"
+        android:gravity="center">
+
+        <!-- 首页Tab -->
+        <LinearLayout
+            android:id="@+id/tabHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/tabHomeIcon"
+                android:src="@drawable/page0_black"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@null"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tabHomeText"
+                android:text="@string/index"
+                android:textSize="15sp"
+                android:textColor="@color/tab_unselected"/>
+        </LinearLayout>
+
+        <!-- 异常检测Tab -->
+        <LinearLayout
+            android:id="@+id/tabDetect"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/tabDetectIcon"
+                android:src="@drawable/page1_black"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@null"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tabDetectText"
+                android:text="@string/abnormal_detect"
+                android:textSize="15sp"
+                android:textColor="@color/tab_unselected"/>
+        </LinearLayout>
+
+        <!-- 历史记录Tab -->
+        <LinearLayout
+            android:id="@+id/tabHistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/tabHistoryIcon"
+                android:src="@drawable/page2_black"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@null"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tabHistoryText"
+                android:text="@string/history_record"
+                android:textSize="15sp"
+                android:textColor="@color/tab_unselected"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

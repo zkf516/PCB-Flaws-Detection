@@ -1,0 +1,16 @@
+<resources>
+    <string name="history_overview">历史速览</string>
+    <string name="take_photo">拍摄</string>
+    <string name="abnormal_detect">异常检测</string>
+    <string name="history_record">历史记录</string>
+    <string name="find_message">检测到新的异常pcb板!</string>
+    <string name="origin_errorNum">当前异常数：0,</string>
+    <string name="last_image_desc">最近一次检测图片</string>
+    <string name="please_photo">请拍摄电路板</string>
+    <string name="check_time">检测时间</string>
+    <string name="choose_time">选择日期</string>
+    <string name="search">查询</string>
+    <string name="index">首页</string>
+    <string name="app_name">质检App</string>
+
+</resources>
