@@ -13,9 +13,18 @@
 
     <div class="result-content">
       <!-- 图片显示区域 -->
-      <div class="image-section">
-        <div class="image-container">
-          <img :src="imageUrl" alt="检测图片" class="result-image">
+      <div class="image-section">        <div class="image-container" 
+             @touchstart="handleTouchStart"
+             @touchmove="handleTouchMove"
+             @touchend="handleTouchEnd"
+             @mousedown="handleMouseDown"
+             @mousemove="handleMouseMove"
+             @mouseup="handleMouseUp"
+             @mouseleave="handleMouseUp"
+             @wheel="handleWheel">          <img :src="imageUrl" 
+               alt="检测图片" 
+               class="result-image"
+               :style="imageStyle">
         </div>
         <div class="image-info">
           <p class="image-note">
@@ -93,6 +102,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { InferenceResult } from '../services/pcbApi';
+import { ref } from 'vue';
 
 interface Props {
   result: InferenceResult;
@@ -105,6 +115,151 @@ interface Emits {
 
 const props = defineProps<Props>();
 defineEmits<Emits>();
+
+// 图片缩放相关状态
+const scale = ref(1);
+const translateX = ref(0);
+const translateY = ref(0);
+const isZooming = ref(false);
+
+// 触摸事件相关
+let initialDistance = 0;
+let initialScale = 1;
+let initialTranslateX = 0;
+let initialTranslateY = 0;
+let lastTouchX = 0;
+let lastTouchY = 0;
+let lastTouchTime = 0;
+let touchCount = 0;
+
+// 鼠标事件相关
+let isDragging = false;
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+const imageStyle = computed(() => ({
+  transform: `scale(${scale.value}) translate(${translateX.value}px, ${translateY.value}px)`,
+}));
+
+// 计算两点间距离
+const getDistance = (touch1: Touch, touch2: Touch) => {
+  const dx = touch1.clientX - touch2.clientX;
+  const dy = touch1.clientY - touch2.clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+// 触摸开始
+const handleTouchStart = (e: TouchEvent) => {
+  e.preventDefault();
+  
+  const currentTime = Date.now();
+  
+  // 检测双击
+  if (e.touches.length === 1) {
+    touchCount++;
+    if (touchCount === 1) {
+      setTimeout(() => {
+        touchCount = 0;
+      }, 300);
+    } else if (touchCount === 2 && currentTime - lastTouchTime < 300) {
+      // 双击重置
+      resetZoom();
+      isZooming.value = true; // 防止手指松开时移动图片
+      setTimeout(() => {
+        isZooming.value = false;
+      }, 300);
+      touchCount = 0;
+      return;
+    }
+    lastTouchTime = currentTime;
+  }
+  
+  if (e.touches.length === 2) {
+    // 双指缩放
+    isZooming.value = true;
+    initialDistance = getDistance(e.touches[0], e.touches[1]);
+    initialScale = scale.value;
+    // 记录当前位置，避免缩放时跳动
+    initialTranslateX = translateX.value;
+    initialTranslateY = translateY.value;
+  } else if (e.touches.length === 1) {
+    // 单指拖拽（允许在任何缩放状态下拖拽）
+    lastTouchX = e.touches[0].clientX;
+    lastTouchY = e.touches[0].clientY;
+    initialTranslateX = translateX.value;
+    initialTranslateY = translateY.value;
+  }
+};
+
+// 触摸移动
+const handleTouchMove = (e: TouchEvent) => {
+  e.preventDefault();
+  
+  if (e.touches.length === 2 && isZooming.value) {
+    // 双指缩放
+    const currentDistance = getDistance(e.touches[0], e.touches[1]);
+    const scaleChange = currentDistance / initialDistance;
+    const newScale = Math.max(0.5, Math.min(20, initialScale * scaleChange));
+    scale.value = newScale;
+  } else if (e.touches.length === 1 && !isZooming.value) {
+    // 单指拖拽（仅在非缩放状态下才能拖拽，防止双指松开时差导致的跳动）
+    const deltaX = e.touches[0].clientX - lastTouchX;
+    const deltaY = e.touches[0].clientY - lastTouchY;
+    translateX.value = initialTranslateX + deltaX / scale.value;
+    translateY.value = initialTranslateY + deltaY / scale.value;
+  }
+};
+
+// 触摸结束
+const handleTouchEnd = (e: TouchEvent) => {
+  // 重置缩放状态，但不重置位置，防止双指松开时差导致的图片跳动
+  if (e.touches.length === 0) {
+    isZooming.value = false;
+  }
+};
+
+// 鼠标滚轮缩放（PC端）
+const handleWheel = (e: WheelEvent) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  scale.value = Math.max(0.5, Math.min(20, scale.value * delta));
+};
+
+// 重置缩放
+const resetZoom = () => {
+  scale.value = 1;
+  translateX.value = 0;
+  translateY.value = 0;
+};
+
+// 鼠标按下
+const handleMouseDown = (e: MouseEvent) => {
+  isDragging = true;
+  lastMouseX = e.clientX;
+  lastMouseY = e.clientY;
+  initialTranslateX = translateX.value;
+  initialTranslateY = translateY.value;
+  e.preventDefault();
+};
+
+// 鼠标移动
+const handleMouseMove = (e: MouseEvent) => {
+  if (isDragging) {
+    const deltaX = e.clientX - lastMouseX;
+    const deltaY = e.clientY - lastMouseY;
+    translateX.value = initialTranslateX + deltaX / scale.value;
+    translateY.value = initialTranslateY + deltaY / scale.value;
+    e.preventDefault();
+  }
+};
+
+// 鼠标松开
+const handleMouseUp = () => {
+  if (isDragging) {
+    isDragging = false;
+    // 移除边界限制，允许图片自由移动
+  }
+};
 
 const defectTypes = computed(() => {
   return Object.entries(props.result.summary.defect_types);
@@ -183,6 +338,11 @@ const formatTimestamp = (timestamp: string) => {
   position: relative;
   display: inline-block;
   width: 100%;
+  overflow: hidden;
+  touch-action: none; /* 禁用默认触摸行为 */
+  user-select: none;
+  background-color: var(--background-color);
+  border-radius: 8px;
 }
 
 .result-image {
@@ -190,9 +350,12 @@ const formatTimestamp = (timestamp: string) => {
   height: auto;
   max-height: 500px;
   object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: var(--background-color);
+  cursor: grab;
+  transform-origin: center center;
+}
+
+.result-image:active {
+  cursor: grabbing;
 }
 
 .image-info {
