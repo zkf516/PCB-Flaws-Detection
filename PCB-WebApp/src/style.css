@@ -1,0 +1,177 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Dark theme (default) */
+  --background-color: #242424;
+  --text-color: #dbdbdb;
+  --weak-text: #888;
+  --surface-color: #333;
+  --surface-alt: #eee;
+  --surface-hover-bg: #555;
+  --primary-color: #646cff;
+  --secondary-color: #c78c33;
+  --card-bg: #1a1a1a;
+}
+
+[data-theme="light"] {
+  --background-color: #ffffff;
+  --text-color: #213547;
+  --weak-text: #888;
+  --surface-color: #eee;
+  --surface-alt: #333;
+  --surface-hover-bg: #e9ecef;
+  --primary-color: #646cff;
+  --secondary-color: #f1a127;
+  --card-bg: #ffffff;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+a {
+  font-weight: 500;
+  color: var(--primary-color);
+  text-decoration: inherit;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  padding: 0.3em 0.6em;
+  font-size: 1em;
+  font-weight: 400;
+  font-family: inherit;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  margin: 3px;
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  border-color: var(--primary-color);
+}
+
+input,
+textarea {
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  padding: 0.3em 0.6em;
+  font-size: 1em;
+  font-weight: 400;
+  font-family: inherit;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  margin: 3px;
+  box-sizing: border-box;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: var(--surface-color);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+input[type="radio"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--surface-color);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+input[type="radio"]:checked, 
+input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  position: relative;
+}
+
+input[type="radio"]:checked::after,
+input[type="checkbox"]:checked::after {
+  content: 'check';
+  font-family: 'Material Symbols Outlined';
+  color: #fff;
+  font-size: 20px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  max-width: 600px;
+  margin: 0.5rem auto;
+  font-family: var(--font-family);
+  color: var(--text-color);
+}
+
+#app {
+  margin: 0 0;
+  padding: 0rem;
+  text-align: center;
+  width: 100%;
+}
+
+.main-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1em;
+  width: 100%;
+}
