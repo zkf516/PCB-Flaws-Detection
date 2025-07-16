@@ -336,8 +336,11 @@ const formatTimestamp = (timestamp: string) => {
 
 .image-container {
   position: relative;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+  min-height: 300px;
   overflow: hidden;
   touch-action: none; /* 禁用默认触摸行为 */
   user-select: none;
@@ -346,12 +349,12 @@ const formatTimestamp = (timestamp: string) => {
 }
 
 .result-image {
-  width: 100%;
-  height: auto;
+  max-width: 100%;
   max-height: 500px;
   object-fit: contain;
   cursor: grab;
   transform-origin: center center;
+  display: block;
 }
 
 .result-image:active {
