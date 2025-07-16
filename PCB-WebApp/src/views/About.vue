@@ -129,38 +129,6 @@
   padding-bottom: 4rem;
 }
 
-.header-section {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.header-section h1 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 0;
-  color: var(--text-color);
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-@media (max-width: 768px) {
-  .header-section h1 {
-    font-size: 2rem;
-  }
-}
-
-.header-section h1 .material-icons {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
-  .header-section h1 .material-icons {
-    font-size: 2rem;
-  }
-}
 
 .content-section {
   display: flex;

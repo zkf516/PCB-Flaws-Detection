@@ -5,7 +5,8 @@
       <button @click="goBack" class="back-btn">
         <span class="material-icons">arrow_back</span>
         返回列表
-      </button>    </div>
+      </button>
+    </div>
 
     <!-- 加载状态 -->
     <div v-if="pcbStore.isLoading" class="loading-message">
@@ -27,11 +28,7 @@
       </div>
 
       <!-- 使用检测结果组件 -->
-      <DetectionResult 
-        :result="pcbStore.selectedHistory"
-        :imageUrl="imageUrl"
-        @clear="goBack"
-      />
+      <DetectionResult :result="pcbStore.selectedHistory" :imageUrl="imageUrl" @clear="goBack" />
     </div>
 
     <!-- 未找到记录 -->
@@ -108,7 +105,7 @@ onMounted(() => {
 
 .back-section {
   position: absolute;
-  top: 3rem;
+  top: 2rem;
   left: 1rem;
   z-index: 10;
 }
@@ -238,7 +235,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

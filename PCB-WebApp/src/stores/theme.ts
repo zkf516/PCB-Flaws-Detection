@@ -12,7 +12,6 @@ interface Theme{
 export const useThemeStore = defineStore('theme', () => {
   const isDark = ref(true)
   const isAutoDark = ref(true)
-  const isMobile = ref(false)
 
   const colorThemes: Theme[] = [
     {
@@ -38,22 +37,6 @@ export const useThemeStore = defineStore('theme', () => {
     }
   ];
   const currentColorTheme = ref(localStorage.getItem('colorTheme') || 'Default');
-
-  // Function to check and update mobile status
-  const updateMobileStatus = () => {
-    isMobile.value = window.innerWidth <= 580;
-  };
-
-  // Initialize mobile detection and add resize listener
-  const initializeMobileDetection = () => {
-    updateMobileStatus();
-    window.addEventListener('resize', updateMobileStatus);
-  };
-
-  // Cleanup function for resize listener
-  const cleanupMobileDetection = () => {
-    window.removeEventListener('resize', updateMobileStatus);
-  };
 
   const setLightDark = (theme: 'light' | 'dark', force: boolean = true) => {
     if (force) isAutoDark.value = false;
@@ -112,10 +95,7 @@ export const useThemeStore = defineStore('theme', () => {
     colorThemes,
     setColorTheme,
     currentColorTheme,
-    isMobile,
     useDeviceTheme,
-    initializeMobileDetection,
-    cleanupMobileDetection,
     isAutoDark
   }
 })

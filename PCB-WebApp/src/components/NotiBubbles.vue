@@ -1,15 +1,13 @@
 <script lang="ts" setup>
 import { useNotificationStore } from '../stores/notification';
-import { useThemeStore } from '../stores/theme';
 
 const nStore = useNotificationStore();
-const tStore = useThemeStore();
 
 </script>
 
 <template>
-  <div class="noticontainer" :class="{ 'container-mobile': tStore.isMobile }">
-    <div v-for="noti in nStore.notifications"  class="noti-bubble">
+  <div class="noticontainer">
+    <div v-for="noti in nStore.notifications" class="noti-bubble">
       <div class="noti-content">
         <span class="noti-type icons" :class="noti.type">{{ noti.type }}</span>
         <span class="noti-text">{{ noti.text }}</span>
@@ -30,20 +28,22 @@ const tStore = useThemeStore();
   align-items: flex-end;
 }
 
-.container-mobile {
-  bottom: 50px;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  align-items: center;
+@media (max-width: 768px) {
+  .container-mobile {
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+  }
 }
 
-.check{
+.check {
   color: #4CAF50;
 }
 
-.error{
+.error {
   color: #F44336;
 }
 
@@ -63,5 +63,4 @@ const tStore = useThemeStore();
   align-items: center;
   gap: 5px;
 }
-
 </style>

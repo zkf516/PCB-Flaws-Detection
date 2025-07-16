@@ -66,48 +66,56 @@ watch(() => themeStore.isAutoDark, (newValue) => {
 </script>
 
 <template>
-  <h1>Settings</h1>
-  <div class="main-div">
-    <div class="cards-div">
-      <div class="card">
-        <h2>API 配置</h2>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 400px;">
-          <label>服务器地址:</label>
-          <input v-model="apiUrl" type="text" placeholder="例: http://192.168.1.100:5001/api/v1" />
-          <div>
-            <button @click="saveApiUrl">
-              <span class="iconspan">save</span>
-              保存
-            </button>
-            <button @click="resetApiUrl">
-              <span class="iconspan">refresh</span>
-              重置
-            </button>
+  <div class="settings-container">
+
+    <div class="header-section">
+      <h1>
+        <span class="material-icons">settings</span>
+        设置
+      </h1>
+    </div>
+    <div class="main-div">
+      <div class="cards-div">
+        <div class="card">
+          <h2>API 配置</h2>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 400px;">
+            <label>服务器地址:</label>
+            <input v-model="apiUrl" type="text" placeholder="例: http://192.168.1.100:5001/api/v1" />
+            <div>
+              <button @click="saveApiUrl">
+                <span class="iconspan">save</span>
+                保存
+              </button>
+              <button @click="resetApiUrl">
+                <span class="iconspan">refresh</span>
+                重置
+              </button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">
+              * 修改后需要刷新页面才能生效。Android设备请使用实际IP地址而非localhost
+            </p>
           </div>
-          <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">
-            * 修改后需要刷新页面才能生效。Android设备请使用实际IP地址而非localhost
-          </p>
         </div>
-      </div>
 
-      <div class="card">
-        <h2>主题设置</h2>
-        <ThemeDisplay v-for="theme in themeStore.colorThemes" :key="theme.name" :theme="theme"
-          @click="themeStore.setColorTheme(theme.name)"
-          :class="{ 'selected': theme.name === themeStore.currentColorTheme }" />
+        <div class="card">
+          <h2>主题设置</h2>
+          <ThemeDisplay v-for="theme in themeStore.colorThemes" :key="theme.name" :theme="theme"
+            @click="themeStore.setColorTheme(theme.name)"
+            :class="{ 'selected': theme.name === themeStore.currentColorTheme }" />
 
-        <button @click="themeStore.toggleLightDark" class="icons">
-          {{ themeStore.isDark ? 'light_mode' : 'dark_mode' }}</button>
-        <label class="checkbox-label">
-          <input type="checkbox" v-model="isMstChecked" @change="mstChecked" />
-          跟随系统主题
-        </label>
-      </div>
+          <button @click="themeStore.toggleLightDark" class="icons">
+            {{ themeStore.isDark ? 'light_mode' : 'dark_mode' }}</button>
+          <label class="checkbox-label">
+            <input type="checkbox" v-model="isMstChecked" @change="mstChecked" />
+            跟随系统主题
+          </label>
+        </div>
 
-      <div class="card">
-        <h2>本地数据</h2>
-        <button @click="clearLocalStorage"><span class="iconspan">delete_forever</span>清除本地数据</button>
-        <p style="font-size: 0.8rem; color: var(--text-secondary);">*这会删除所有本地存储的数据，包括您的偏好设置和API设置，且无法撤销。</p>
+        <div class="card">
+          <h2>本地数据</h2>
+          <button @click="clearLocalStorage"><span class="iconspan">delete_forever</span>清除本地数据</button>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">*这会删除所有本地存储的数据，包括您的偏好设置和API设置，且无法撤销。</p>
+        </div>
       </div>
     </div>
   </div>
@@ -174,5 +182,17 @@ watch(() => themeStore.isAutoDark, (newValue) => {
 
 .checkbox-label input[type="checkbox"]:hover {
   border-color: var(--primary-color);
+}
+
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+h1 .material-icons {
+  font-size: 2.5rem;
+  color: var(--primary-color);
 }
 </style>
