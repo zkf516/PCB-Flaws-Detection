@@ -15,10 +15,10 @@ const handleImageUpload = async (file: File) => {
       URL.revokeObjectURL(uploadedImageUrl.value)
     }
     uploadedImageUrl.value = URL.createObjectURL(file)
-    
+
     // 上传图片进行检测
     await pcbStore.uploadImage(file)
-    
+
     // 检测成功后，清理blob URL并使用标注后的图片URL
     if (pcbStore.currentResult) {
       if (uploadedImageUrl.value.startsWith('blob:')) {
@@ -50,35 +50,29 @@ const handleClearResult = () => {
 
 <template>
   <div class="home-container">
-        <div class="header-section">
-          <h1>
-            <span class="material-icons">precision_manufacturing</span>
-            PCB 缺陷检测
-          </h1>
-          <p class="subtitle">拍照或上传PCB图片，AI智能检测电路板缺陷</p>        </div>
+    <div class="header-section">
+      <h1>
+        <span class="material-icons">precision_manufacturing</span>
+        PCB 缺陷检测
+      </h1>
+      <p class="subtitle">拍照或上传PCB图片，智能检测电路板缺陷</p>
+    </div>
 
-        <!-- 上传区域 -->
-        <div v-if="!pcbStore.hasResult" class="upload-section">
-          <CameraUpload 
-            :isUploading="pcbStore.isLoading"
-            @upload="handleImageUpload"
-          />
-        </div>
+    <!-- 上传区域 -->
+    <div v-if="!pcbStore.hasResult" class="upload-section">
+      <CameraUpload :isUploading="pcbStore.isLoading" @upload="handleImageUpload" />
+    </div>
 
-        <!-- 检测结果 -->
-        <div v-if="pcbStore.hasResult && pcbStore.currentResult" class="result-section">
-          <DetectionResult 
-            :result="pcbStore.currentResult"
-            :imageUrl="uploadedImageUrl"
-            @clear="handleClearResult"
-          />
-        </div>        <!-- 加载状态 -->
-        <div v-if="pcbStore.isLoading" class="loading-overlay">
-          <div class="loading-content">
-            <span class="material-icons spinning">hourglass_empty</span>
-            <p>AI正在分析PCB图片...</p>
-          </div>
-        </div>
+    <!-- 检测结果 -->
+    <div v-if="pcbStore.hasResult && pcbStore.currentResult" class="result-section">
+      <DetectionResult :result="pcbStore.currentResult" :imageUrl="uploadedImageUrl" @clear="handleClearResult" />
+    </div> <!-- 加载状态 -->
+    <div v-if="pcbStore.isLoading" class="loading-overlay">
+      <div class="loading-content">
+        <span class="material-icons spinning">hourglass_empty</span>
+        <p>正在分析PCB图片...</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -163,28 +157,6 @@ const handleClearResult = () => {
   line-height: 1.5;
 }
 
-.retry-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s ease;
-}
-
-.retry-btn:hover {
-  background: #b91c1c;
-}
-
-.retry-btn .material-icons {
-  font-size: 1rem;
-}
-
 .upload-section {
   margin-bottom: 2rem;
 }
@@ -233,7 +205,12 @@ const handleClearResult = () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

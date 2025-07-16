@@ -15,11 +15,7 @@
       <!-- 图片显示区域 -->
       <div class="image-section">
         <div class="image-container">
-          <img 
-            :src="imageUrl" 
-            alt="检测图片"
-            class="result-image"
-          >
+          <img :src="imageUrl" alt="检测图片" class="result-image">
         </div>
         <div class="image-info">
           <p class="image-note">
@@ -33,10 +29,12 @@
       <div class="summary-section">
         <div class="summary-card">
           <div class="summary-item">
-            <span class="material-icons summary-icon defect">error</span>
+            <span class="material-icons summary-icon" :class="result.summary.total_defects ? 'defect' : 'good'">
+              {{ result.summary.total_defects ? 'error' : 'check' }}
+            </span>
             <div>
-              <div class="summary-number">{{ result.summary.total_defects }}</div>
-              <div class="summary-label">总缺陷数</div>
+              <span class="summary-number">{{ result.summary.total_defects }}</span>
+              个缺陷
             </div>
           </div>
         </div>
@@ -45,11 +43,7 @@
         <div v-if="defectTypes.length > 0" class="defect-types">
           <h4>缺陷类型分布</h4>
           <div class="defect-list">
-            <div 
-              v-for="[type, count] in defectTypes" 
-              :key="type"
-              class="defect-item"
-            >
+            <div v-for="[type, count] in defectTypes" :key="type" class="defect-item">
               <span class="defect-name">{{ type }}</span>
               <span class="defect-count">{{ count }}</span>
             </div>
@@ -65,11 +59,7 @@
           <p>未检测到缺陷</p>
         </div>
         <div v-else class="detection-list">
-          <div 
-            v-for="(detection, index) in result.detection_results" 
-            :key="index"
-            class="detection-item"
-          >
+          <div v-for="(detection, index) in result.detection_results" :key="index" class="detection-item">
             <div class="detection-header">
               <span class="detection-class">{{ detection.class }}</span>
               <span class="detection-confidence">
@@ -79,7 +69,9 @@
             <div class="detection-details">
               <div class="detection-bbox">
                 <span class="material-icons">crop_free</span>
-                位置: [{{ detection.bbox.map(v => Math.round(v)).join(', ') }}]
+                <span>
+                  位置 [{{detection.bbox.map(v => Math.round(v)).join(', ')}}]
+                </span>
               </div>
               <div class="confidence-bar">
                 <div class="confidence-fill" :style="{ width: (detection.confidence * 100) + '%' }"></div>
@@ -134,17 +126,15 @@ const formatTimestamp = (timestamp: string) => {
 .detection-result {
   background: var(--surface-color);
   border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1rem 0;
+  padding: 3%;
 }
 
 .result-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1rem;
 }
 
 .result-header h3 {
@@ -176,7 +166,7 @@ const formatTimestamp = (timestamp: string) => {
 .result-content {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 @media (min-width: 768px) {
@@ -202,6 +192,7 @@ const formatTimestamp = (timestamp: string) => {
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-color);
 }
 
 .image-info {
@@ -252,19 +243,10 @@ const formatTimestamp = (timestamp: string) => {
   font-size: 2rem;
 }
 
-.summary-icon.defect {
-  color: #e74c3c;
-}
-
 .summary-number {
   font-size: 1.8rem;
   font-weight: bold;
   color: var(--text-color);
-}
-
-.summary-label {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
 }
 
 .defect-types h4 {
@@ -332,34 +314,30 @@ const formatTimestamp = (timestamp: string) => {
 }
 
 .detection-item {
-  padding: 1.5rem;
+  padding: 1rem;
   background: var(--background-color);
   border-radius: 8px;
-  border: 1px solid var(--border-color);
   transition: all 0.3s ease;
 }
 
 .detection-item:hover {
   background: var(--surface-hover-bg);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .detection-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.6rem;
 }
 
 .detection-class {
   font-weight: bold;
   color: var(--text-color);
-  font-size: 1.1rem;
   background: var(--primary-color);
   color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 12px;
+  padding: 0.1rem 0.8rem;
+  border-radius: 1em;
   font-size: 0.9rem;
 }
 
@@ -420,11 +398,11 @@ const formatTimestamp = (timestamp: string) => {
   .summary-section {
     order: 2;
   }
-  
+
   .details-section {
     order: 3;
   }
-  
+
   .timestamp {
     order: 4;
   }

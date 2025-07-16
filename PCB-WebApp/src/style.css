@@ -22,15 +22,15 @@
 }
 
 [data-theme="light"] {
-  --background-color: #ffffff;
+  --background-color: #f5f5f5;
   --text-color: #213547;
   --weak-text: #888;
-  --surface-color: #eee;
+  --surface-color: #e5e5e5;
   --surface-alt: #333;
   --surface-hover-bg: #e9ecef;
   --primary-color: #646cff;
   --secondary-color: #f1a127;
-  --card-bg: #ffffff;
+  --card-bg: #fff;
 }
 
 body {
@@ -74,11 +74,17 @@ button {
   color: var(--text-color);
   margin: 3px;
   cursor: pointer;
+  text-wrap: nowrap;
   transition: border-color 0.25s, background-color 0.3s ease, color 0.3s ease;
 }
 
 button:hover {
   border-color: var(--primary-color);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 input,
@@ -174,4 +180,13 @@ input[type="checkbox"]:checked::after {
   justify-content: center;
   margin-bottom: 1em;
   width: 100%;
+}
+
+
+.defect {
+  color: #e74c3c;
+}
+
+.good {
+  color: #2ecc71;
 }

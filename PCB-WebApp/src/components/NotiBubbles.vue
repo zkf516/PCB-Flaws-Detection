@@ -21,7 +21,7 @@ const tStore = useThemeStore();
 <style scoped>
 .noticontainer {
   position: fixed;
-  bottom: 10px;
+  bottom: 50px;
   right: 10px;
   z-index: 3000;
   text-align: left;

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Capacitor } from '@capacitor/core';
 import { useThemeStore } from '../stores/theme';
 import { useNotificationStore } from '../stores/notification';
 import ThemeDisplay from '../components/ThemeDisplay.vue';
@@ -13,11 +12,7 @@ const apiUrl = ref('');
 
 // 根据平台获取默认API地址
 const getDefaultApiUrl = (): string => {
-  if (Capacitor.isNativePlatform()) {
-    return 'http://192.168.3.6:5001/api/v1';
-  } else {
-    return 'http://localhost:5001/api/v1';
-  }
+  return 'http://localhost:5001/api/v1';
 };
 
 // 从localStorage获取自定义API地址，如果没有则使用默认值
@@ -44,10 +39,10 @@ function saveApiUrl() {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'http://' + url;
     }
-    
+
     // 移除末尾的斜杠
     url = url.replace(/\/$/, '');
-    
+
     localStorage.setItem('custom_api_url', url);
     notificationStore.showNotification('API地址已保存，请刷新页面使设置生效', 'check');
   }
@@ -76,19 +71,16 @@ watch(() => themeStore.isAutoDark, (newValue) => {
     <div class="cards-div">
       <div class="card">
         <h2>API 配置</h2>
-        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 400px;">
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 400px;">
           <label>服务器地址:</label>
-          <input 
-            v-model="apiUrl" 
-            type="text" 
-            placeholder="例: http://192.168.1.100:5001/api/v1"
-            style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;"
-          />
-          <div style="display: flex; gap: 0.5rem;">
-            <button @click="saveApiUrl" style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">
+          <input v-model="apiUrl" type="text" placeholder="例: http://192.168.1.100:5001/api/v1" />
+          <div>
+            <button @click="saveApiUrl">
+              <span class="iconspan">save</span>
               保存
             </button>
-            <button @click="resetApiUrl" style="padding: 0.5rem 1rem; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            <button @click="resetApiUrl">
+              <span class="iconspan">refresh</span>
               重置
             </button>
           </div>
@@ -99,7 +91,7 @@ watch(() => themeStore.isAutoDark, (newValue) => {
       </div>
 
       <div class="card">
-        <h2>Theme Settings</h2>
+        <h2>主题设置</h2>
         <ThemeDisplay v-for="theme in themeStore.colorThemes" :key="theme.name" :theme="theme"
           @click="themeStore.setColorTheme(theme.name)"
           :class="{ 'selected': theme.name === themeStore.currentColorTheme }" />
@@ -108,16 +100,14 @@ watch(() => themeStore.isAutoDark, (newValue) => {
           {{ themeStore.isDark ? 'light_mode' : 'dark_mode' }}</button>
         <label class="checkbox-label">
           <input type="checkbox" v-model="isMstChecked" @change="mstChecked" />
-          Match System Theme
+          跟随系统主题
         </label>
       </div>
 
       <div class="card">
-        <h2>Local Data</h2>
-        <button @click="clearLocalStorage"><span class="iconspan">delete_forever</span>Clear Local Storage</button>
-        <p>*This will remove all locally stored data, including your preferences and sign in status, and cannot be
-          undone.
-        </p>
+        <h2>本地数据</h2>
+        <button @click="clearLocalStorage"><span class="iconspan">delete_forever</span>清除本地数据</button>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">*这会删除所有本地存储的数据，包括您的偏好设置和API设置，且无法撤销。</p>
       </div>
     </div>
   </div>
