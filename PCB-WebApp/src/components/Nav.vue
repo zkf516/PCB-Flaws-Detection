@@ -58,7 +58,7 @@ a, router-link {
   cursor: pointer;
 }
 
-a:hover, .router-link-active {
+a:active, .router-link-active {
   background-color: var(--surface-hover-bg);
 }
 
@@ -84,7 +84,7 @@ a:hover, .router-link-active {
   color: white;
 }
 
-.router-link-active:hover {
+.router-link-active:active {
   background-color: var(--primary-color);
   opacity: 0.8;
 }

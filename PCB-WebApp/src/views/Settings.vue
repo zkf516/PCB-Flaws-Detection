@@ -180,7 +180,7 @@ watch(() => themeStore.isAutoDark, (newValue) => {
   font-weight: bold;
 }
 
-.checkbox-label input[type="checkbox"]:hover {
+.checkbox-label input[type="checkbox"]:active {
   border-color: var(--primary-color);
 }
 

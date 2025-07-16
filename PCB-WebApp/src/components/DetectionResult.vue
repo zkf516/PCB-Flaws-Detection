@@ -13,18 +13,11 @@
 
     <div class="result-content">
       <!-- 图片显示区域 -->
-      <div class="image-section">        <div class="image-container" 
-             @touchstart="handleTouchStart"
-             @touchmove="handleTouchMove"
-             @touchend="handleTouchEnd"
-             @mousedown="handleMouseDown"
-             @mousemove="handleMouseMove"
-             @mouseup="handleMouseUp"
-             @mouseleave="handleMouseUp"
-             @wheel="handleWheel">          <img :src="imageUrl" 
-               alt="检测图片" 
-               class="result-image"
-               :style="imageStyle">
+      <div class="image-section">
+        <div class="image-container" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
+          @touchend="handleTouchEnd" @mousedown="handleMouseDown" @mousemove="handleMouseMove" @mouseup="handleMouseUp"
+          @mouseleave="handleMouseUp" @wheel="handleWheel" @dblclick="resetZoom">
+          <img :src="imageUrl" alt="检测图片" class="result-image" :style="imageStyle">
         </div>
         <div class="image-info">
           <p class="image-note">
@@ -68,7 +61,8 @@
           <p>未检测到缺陷</p>
         </div>
         <div v-else class="detection-list">
-          <div v-for="(detection, index) in result.detection_results" :key="index" class="detection-item">
+          <div v-for="(detection, index) in result.detection_results" :key="index" class="detection-item"
+            @click="focusOnDetection(detection.bbox)">
             <div class="detection-header">
               <span class="detection-class">{{ detection.class }}</span>
               <span class="detection-confidence">
@@ -151,9 +145,9 @@ const getDistance = (touch1: Touch, touch2: Touch) => {
 // 触摸开始
 const handleTouchStart = (e: TouchEvent) => {
   e.preventDefault();
-  
+
   const currentTime = Date.now();
-  
+
   // 检测双击
   if (e.touches.length === 1) {
     touchCount++;
@@ -173,7 +167,7 @@ const handleTouchStart = (e: TouchEvent) => {
     }
     lastTouchTime = currentTime;
   }
-  
+
   if (e.touches.length === 2) {
     // 双指缩放
     isZooming.value = true;
@@ -194,12 +188,12 @@ const handleTouchStart = (e: TouchEvent) => {
 // 触摸移动
 const handleTouchMove = (e: TouchEvent) => {
   e.preventDefault();
-  
+
   if (e.touches.length === 2 && isZooming.value) {
     // 双指缩放
     const currentDistance = getDistance(e.touches[0], e.touches[1]);
     const scaleChange = currentDistance / initialDistance;
-    const newScale = Math.max(0.5, Math.min(20, initialScale * scaleChange));
+    const newScale = Math.max(0.5, initialScale * scaleChange);
     scale.value = newScale;
   } else if (e.touches.length === 1 && !isZooming.value) {
     // 单指拖拽（仅在非缩放状态下才能拖拽，防止双指松开时差导致的跳动）
@@ -222,7 +216,7 @@ const handleTouchEnd = (e: TouchEvent) => {
 const handleWheel = (e: WheelEvent) => {
   e.preventDefault();
   const delta = e.deltaY > 0 ? 0.9 : 1.1;
-  scale.value = Math.max(0.5, Math.min(20, scale.value * delta));
+  scale.value = Math.max(0.5, scale.value * delta);
 };
 
 // 重置缩放
@@ -230,6 +224,65 @@ const resetZoom = () => {
   scale.value = 1;
   translateX.value = 0;
   translateY.value = 0;
+};
+
+// 聚焦到指定的检测区域
+const focusOnDetection = (bbox: number[]) => {
+  // bbox 格式：[x1, y1, x2, y2]
+  const [x1, y1, x2, y2] = bbox;
+
+  // 计算检测区域的中心点和大小
+  const centerX = (x1 + x2) / 2;
+  const centerY = (y1 + y2) / 2;
+  const bboxWidth = Math.abs(x2 - x1);
+  const bboxHeight = Math.abs(y2 - y1);
+  // 获取图片容器元素
+  const container = document.querySelector('.image-container') as HTMLElement;
+  const image = document.querySelector('.result-image') as HTMLImageElement;
+  if (!container || !image) return;
+
+  // 获取容器的实际尺寸
+  const containerRect = container.getBoundingClientRect();
+
+  // 计算图片在容器中的显示尺寸（考虑 object-fit: contain）
+  const containerWidth = containerRect.width;
+  const containerHeight = containerRect.height;
+
+  // 计算图片在原始尺寸下的中心点
+  const imageNaturalWidth = image.naturalWidth || 1;
+  const imageNaturalHeight = image.naturalHeight || 1;
+
+  // 计算合适的缩放比例，让检测区域占视窗的30%左右
+  const targetSize = Math.min(imageNaturalWidth, imageNaturalHeight) * 0.3;
+  const bboxSize = Math.max(bboxWidth, bboxHeight);
+  let targetScale = targetSize / bboxSize;
+
+  // 计算图片显示尺寸
+  const imageAspectRatio = imageNaturalWidth / imageNaturalHeight;
+  const containerAspectRatio = containerWidth / containerHeight;
+
+  let scaleFactor;
+  if (imageAspectRatio > containerAspectRatio) {
+    // 图片更宽，以容器宽度为准
+    scaleFactor = containerWidth / imageNaturalWidth;
+  } else {
+    // 图片更高，以容器高度为准
+    scaleFactor = containerHeight / imageNaturalHeight;
+  }
+
+  // 计算需要的偏移量（以显示坐标系为准）
+  const offsetX = (centerX - imageNaturalWidth / 2) * scaleFactor;
+  const offsetY = (centerY - imageNaturalHeight / 2) * scaleFactor
+
+  image.style.transition = 'transform 1.0s ease, opacity 0.3s ease';
+  // 设置平移与缩放
+  container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  translateX.value = -offsetX;
+  translateY.value = -offsetY;
+  scale.value = targetScale;
+  setTimeout(() => {
+    image.style.transition = 'none'; // 禁用过渡效果，防止后续操作影响
+  }, 1000);
 };
 
 // 鼠标按下
@@ -313,7 +366,7 @@ const formatTimestamp = (timestamp: string) => {
   transition: all 0.3s ease;
 }
 
-.clear-result-btn:hover {
+.clear-result-btn:active {
   background: var(--surface-hover-bg);
   color: var(--text-color);
 }
@@ -342,7 +395,8 @@ const formatTimestamp = (timestamp: string) => {
   width: 100%;
   min-height: 300px;
   overflow: hidden;
-  touch-action: none; /* 禁用默认触摸行为 */
+  touch-action: none;
+  /* 禁用默认触摸行为 */
   user-select: none;
   background-color: var(--background-color);
   border-radius: 8px;
@@ -484,10 +538,13 @@ const formatTimestamp = (timestamp: string) => {
   background: var(--background-color);
   border-radius: 8px;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.detection-item:hover {
+.detection-item:active {
   background: var(--surface-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .detection-header {

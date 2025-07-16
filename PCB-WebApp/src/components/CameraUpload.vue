@@ -332,7 +332,7 @@ onUnmounted(cleanup)
   background: var(--surface-color);
 }
 
-.upload-area:hover {
+.upload-area:active {
   border-color: var(--primary-color);
   background: var(--surface-hover-bg);
 }
@@ -395,7 +395,7 @@ onUnmounted(cleanup)
   transition: background 0.2s ease;
 }
 
-.clear-btn:hover {
+.clear-btn:active {
   background: rgba(0, 0, 0, 0.8);
 }
 
@@ -420,7 +420,7 @@ onUnmounted(cleanup)
   width: 100%;
 }
 
-.upload-btn:hover:not(:disabled) {
+.upload-btn:active:not(:disabled) {
   background: var(--primary-hover);
   transform: translateY(-2px);
 }

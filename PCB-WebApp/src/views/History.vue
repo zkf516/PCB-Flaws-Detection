@@ -204,7 +204,7 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-.clear-filter-btn:hover {
+.clear-filter-btn:active {
   background: var(--surface-hover-bg);
   color: var(--text-color);
 }
@@ -249,7 +249,7 @@ onMounted(() => {
   max-width: 600px;
 }
 
-.history-item:hover {
+.history-item:active {
   background: var(--surface-hover-bg);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -367,7 +367,7 @@ onMounted(() => {
   transition: all 0.3s ease;
 }
 
-.start-detection-btn:hover {
+.start-detection-btn:active {
   background: var(--primary-hover);
   transform: translateY(-2px);
 }

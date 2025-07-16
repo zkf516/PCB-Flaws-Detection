@@ -76,10 +76,10 @@ button {
   margin: 3px;
   cursor: pointer;
   text-wrap: nowrap;
-  transition: border-color 0.25s, background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-button:hover {
+button:active {
   border-color: var(--primary-color);
 }
 

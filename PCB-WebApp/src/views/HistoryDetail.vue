@@ -126,7 +126,7 @@ onMounted(() => {
   font-size: 1rem;
 }
 
-.back-btn:hover {
+.back-btn:active {
   background: var(--surface-hover-bg);
   transform: translateY(-2px);
 }
