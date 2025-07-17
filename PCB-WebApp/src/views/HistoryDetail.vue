@@ -28,7 +28,7 @@
       </div>
 
       <!-- 使用检测结果组件 -->
-      <DetectionResult :result="pcbStore.selectedHistory" :imageUrl="imageUrl" @clear="goBack" />
+      <DetectionResult :result="pcbStore.selectedHistory" :imageUrl="imageUrl"/>
     </div>
 
     <!-- 未找到记录 -->
@@ -36,10 +36,6 @@
       <span class="material-icons">search_off</span>
       <h3>未找到该检测记录</h3>
       <p>该记录可能已被删除或不存在</p>
-      <button @click="goBack" class="back-btn">
-        <span class="material-icons">arrow_back</span>
-        返回历史记录
-      </button>
     </div>
   </div>
 </template>
@@ -97,38 +93,8 @@ onMounted(() => {
 
 <style scoped>
 .history-detail-container {
-  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 3%;
-  min-height: calc(100vh - 3em);
-}
-
-.back-section {
-  position: absolute;
-  top: 2rem;
-  left: 1rem;
-  z-index: 10;
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--surface-color);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  font-size: 1rem;
-}
-
-.back-btn:active {
-  background: var(--surface-hover-bg);
-  transform: translateY(-2px);
 }
 
 .error-message {

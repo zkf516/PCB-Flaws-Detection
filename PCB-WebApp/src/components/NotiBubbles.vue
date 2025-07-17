@@ -29,7 +29,7 @@ const nStore = useNotificationStore();
 }
 
 @media (max-width: 768px) {
-  .container-mobile {
+  .noticontainer {
     bottom: 50px;
     left: 0;
     right: 0;

@@ -3,7 +3,7 @@
     <div class="header-section">
       <h1>
         <span class="material-icons">info</span>
-        关于PCB检测系统
+        关于
       </h1>
     </div>
 
@@ -50,7 +50,7 @@
             <span class="material-icons">computer</span>
             <div>
               <strong>前端技术</strong>
-              <p>Vue 3 + TypeScript + Pinia，现代化响应式界面</p>
+              <p>Vue 3 + TypeScript + Ionic，现代化跨平台应用</p>
             </div>
           </div>
           
@@ -58,7 +58,7 @@
             <span class="material-icons">memory</span>
             <div>
               <strong>AI模型</strong>
-              <p>基于深度学习的目标检测算法，高精度缺陷识别</p>
+              <p>基于YOLO模型，高精度高效率缺陷识别</p>
             </div>
           </div>
           
@@ -74,7 +74,7 @@
             <span class="material-icons">storage</span>
             <div>
               <strong>数据存储</strong>
-              <p>完整的检测记录存储，支持历史数据查询</p>
+              <p>使用PostgreSQL数据库，支持历史数据查询</p>
             </div>
           </div>
         </div>
