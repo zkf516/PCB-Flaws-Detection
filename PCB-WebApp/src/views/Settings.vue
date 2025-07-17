@@ -123,6 +123,10 @@ watch(() => themeStore.isAutoDark, (newValue) => {
 
 
 <style scoped>
+.header-section {
+  margin-bottom: 0rem;
+}
+
 .card {
   display: flex;
   flex-direction: column;
