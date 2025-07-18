@@ -47,6 +47,14 @@ const nStore = useNotificationStore();
   color: #F44336;
 }
 
+.warning {
+  color: #FF9800;
+}
+
+.info {
+  color: var(--primary-color);
+}
+
 .noti-bubble {
   border-radius: 8px;
   padding: 10px;
