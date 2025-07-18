@@ -30,6 +30,11 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: Settings
+  },
+  {
+    path: '/realtime',
+    name: 'RealTimeMonitor',
+    component: () => import('../views/RealTimeMonitor.vue')
   }
 ]
 

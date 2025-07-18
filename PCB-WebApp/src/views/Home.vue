@@ -59,11 +59,16 @@ onMounted(()=>{
         <span class="material-icons">precision_manufacturing</span>
         PCB 缺陷检测
       </h1>
-      <p class="subtitle">拍照或上传PCB图片，智能检测电路板缺陷</p>
+      <p class="subtitle">拍照或上传PCB图片</p>
+      <p class="subtitle">智能检测电路板缺陷</p>
     </div>
 
     <!-- 上传区域 -->
     <div v-if="!pcbStore.hasResult" class="upload-section">
+      <button class="realtime-btn" @click="$router.push('/realtime')">
+        <span class="material-icons">monitor_heart</span>
+        实时监测
+      </button>
       <CameraUpload :isUploading="pcbStore.isLoading" @upload="handleImageUpload" />
     </div>
 
@@ -90,7 +95,7 @@ onMounted(()=>{
 .home-container {
   margin: 0 auto;
   padding: 2rem 1rem;
-  padding-bottom: 4rem;
+  padding-bottom: 0.7rem;
 }
 
 
@@ -180,6 +185,33 @@ onMounted(()=>{
 
 .spinning {
   animation: spin 1s linear infinite;
+}
+
+.realtime-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 0.9rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0 auto 1.5rem auto;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(74,0,224,0.08);
+  transition: all 0.2s;
+  width: 100%;
+  max-width: 500px;
+}
+.realtime-btn .material-icons {
+  font-size: 1.5em;
+}
+.realtime-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74,0,224,0.18);
 }
 
 @keyframes spin {
