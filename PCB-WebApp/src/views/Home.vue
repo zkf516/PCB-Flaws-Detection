@@ -84,8 +84,8 @@ const handleClearResult = () => {
 <style scoped>
 .home-container {
   margin: 0 auto;
-  padding: 2rem 1rem;
-  padding-bottom: 0.7rem;
+  padding: 3rem 1rem;
+  padding-bottom: 0rem;
 }
 
 

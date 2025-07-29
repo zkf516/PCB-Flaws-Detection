@@ -154,7 +154,7 @@ onMounted(() => {
 <style scoped>
 .history-container {
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 1rem;
 }
 
 .subtitle {

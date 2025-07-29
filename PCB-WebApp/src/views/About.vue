@@ -128,7 +128,7 @@
 .about-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 1rem;
   min-height: calc(100vh - 3em);
   padding-bottom: 4rem;
 }

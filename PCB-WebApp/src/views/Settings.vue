@@ -192,7 +192,7 @@ watch(() => themeStore.isAutoDark, (newValue) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 0;
+  padding: 3rem 0;
 }
 
 h1 .material-icons {
