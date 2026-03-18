@@ -90,29 +90,19 @@
           </div>
           <div class="connection-info">
             <div v-for="log in connectionLogs" :key="log.timestamp">{{ log.text }}</div>
-          </div>
-        </div>
+          </div>        </div>
       </div>
     </div>
-<!-- 支持多条通知弹窗堆叠显示 -->
-<div class="notification-stack">
-  <div v-for="(item, idx) in notificationQueue" :key="item.id"
-    :class="['notification', item.class, item.borderClass, { show: item.show }]"
-    :style="{ top: `${24 + idx * 72}px` }"
-  >
-    <span class="material-icons notification-icon">{{ item.icon }}</span>
-    <div>
-      <strong>{{ item.title }}</strong>
-      <p>{{ item.message }}</p>
-    </div>
-  </div>
-</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import DetectionResult from '../components/DetectionResult.vue';
+import { useNotificationStore } from '../stores/notification';
+
+// 使用通知Store
+const notificationStore = useNotificationStore();
 
 // 状态
 
@@ -132,9 +122,7 @@ const reviewLoading = ref(false);
 const imageError = ref(false);
 const imageLoaded = ref(false);
 const connectionLogs = ref<{text:string,timestamp:number}[]>([{text:'正在初始化 WebSocket 连接...',timestamp:Date.now()}]);
-// 通知弹窗队列
-const notificationQueue = ref<any[]>([]);
-let notificationId = 0;
+// 移除自定义通知系统，使用notificationStore
 // 主色/副色边框切换
 function resetImageAndQuality() {
   currentImage.value = '';
@@ -176,7 +164,7 @@ function toggleConnection() {
     isConnected.value = false;
     if (ws) ws.close();
     logConnection('连接已取消');
-    showNotification('连接已取消', '已停止连接服务器', 'info');
+    notificationStore.showNotification('连接已取消', 'info');
     return;
   }
   if (isConnected.value) {
@@ -200,20 +188,20 @@ function connectWebSocket() {
     isConnecting.value = false;
     isConnected.value = true;
     logConnection('连接成功');
-    showNotification('连接成功', '已连接到实时检测服务器', 'check_circle');
+    notificationStore.showNotification('已连接到实时检测服务器', 'check');
     startUptime();
   };
   ws.onclose = () => {
     isConnected.value = false;
     isConnecting.value = false;
     logConnection('连接已关闭');
-    showNotification('连接已关闭', 'WebSocket 连接已断开', 'info');
+    notificationStore.showNotification('WebSocket 连接已断开', 'info');
     stopUptime();
     resetImageAndQuality();
   };
   ws.onerror = () => {
     logConnection('WebSocket 发生错误');
-    showNotification('连接错误', 'WebSocket 发生错误', 'error');
+    notificationStore.showNotification('WebSocket 发生错误', 'error');
   };
   ws.onmessage = (event) => {
     try {
@@ -235,7 +223,7 @@ function changeWsUrl() {
   if (isConnected.value || isConnecting.value) return;
   wsUrl = wsUrlInput.value;
   logConnection('已修改 WebSocket 地址: ' + wsUrl);
-  showNotification('WebSocket 地址已修改', wsUrl, 'info');
+  notificationStore.showNotification('WebSocket 地址已修改', 'info');
 }
 
 function startUptime() {
@@ -271,7 +259,7 @@ const pcbStore = usePCBStore();
 
 async function handleFullModelReview() {
   if (!currentImage.value || imageError.value) {
-    showNotification('图片获取异常', '当前图片无法获取，无法复查', 'error');
+    notificationStore.showNotification('当前图片无法获取，无法复查', 'error');
     return;
   }
   reviewLoading.value = true;
@@ -287,10 +275,10 @@ async function handleFullModelReview() {
       reviewResult.value = { ...pcbStore.currentResult, imageUrl: pcbStore.currentResult.annotated_image_url };
       showReviewResult.value = true;
     } else {
-      showNotification('复查失败', '未获取到检测结果', 'error');
+      notificationStore.showNotification('未获取到检测结果', 'error');
     }
   } catch (e) {
-    showNotification('图片获取异常', '无法获取实时图片或上传失败', 'error');
+    notificationStore.showNotification('无法获取实时图片或上传失败', 'error');
   } finally {
     reviewLoading.value = false;
   }
@@ -312,10 +300,10 @@ function updateFromProperties(props: any) {
       pcbCount.value += 1;
       newFlaws.value = props.total_flaws_detected;
       lastBoardId = boardId;
-      showNotification('发现新缺陷', `检测到 ${props.total_flaws_detected} 个缺陷`, 'warning');
+      notificationStore.showNotification(`检测到 ${props.total_flaws_detected} 个缺陷`, 'warning');
       // 新监测到异常开发板（有缺陷）弹窗
       if (props.total_flaws_detected > 0) {
-        showNotification('发现异常开发板', `检测到 ${props.total_flaws_detected} 个缺陷`, 'error');
+        notificationStore.showNotification(`发现异常开发板：${props.total_flaws_detected} 个缺陷`, 'error');
       }
     }
     // 如果是同一板子重复上报，不做处理
@@ -337,45 +325,11 @@ function clearData() {
   lastBoardId = null;
   resetImageAndQuality();
   logConnection('已清除所有数据');
-  showNotification('数据已重置', '所有检测数据已被清除', 'delete');
+  notificationStore.showNotification('数据已重置', 'info');
 }
 function logConnection(msg: string) {
   connectionLogs.value.unshift({ text: `[${new Date().toLocaleTimeString()}] ${msg}`, timestamp: Date.now() });
   if (connectionLogs.value.length > 8) connectionLogs.value.pop();
-}
-function showNotification(title: string, message: string, icon: string = 'info') {
-  // 失败为副色，异常开发板为红色
-  let nClass = 'info';
-  if (title.includes('异常开发板')) {
-    nClass = 'critical';
-  } else if (icon === 'error') {
-    nClass = 'secondary';
-  } else if (icon === 'warning') {
-    nClass = 'warning';
-  } else if (icon === 'check_circle') {
-    nClass = '';
-  } else if (icon === 'delete') {
-    nClass = 'warning';
-  }
-  const borderClass = isConnected.value ? 'border-primary' : 'border-secondary';
-  const id = ++notificationId;
-  const item = {
-    id,
-    title,
-    message,
-    icon,
-    class: nClass,
-    borderClass,
-    show: true
-  };
-  notificationQueue.value.push(item);
-  setTimeout(() => {
-    item.show = false;
-    setTimeout(() => {
-      const idx = notificationQueue.value.findIndex((n) => n.id === id);
-      if (idx !== -1) notificationQueue.value.splice(idx, 1);
-    }, 350);
-  }, 5000);
 }
 onMounted(() => {
   document.body.classList.toggle('dark-theme', isDarkTheme.value);
@@ -418,7 +372,7 @@ onMounted(() => {
   z-index: 2000;
 }
 .review-modal-content {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 2rem 1.5rem;
   max-width: 90vw;
@@ -437,30 +391,7 @@ onMounted(() => {
   color: var(--primary-color);
   cursor: pointer;
 }
-.review-modal img {
-  max-width: 100%;
-  max-height: 320px;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-.review-modal .result-info {
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-.review-modal .stat-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-}
-.review-modal .stat-label {
-  color: var(--text-secondary);
-}
-.review-modal .stat-value {
-  font-weight: bold;
-  color: var(--primary-color);
-}
-.review-modal .review-loading {
+.review-loading {
   font-size: 1.1rem;
   color: var(--primary-color);
   margin: 2rem 0;
@@ -698,81 +629,6 @@ onMounted(() => {
   border: 1px solid var(--primary-color);
 }
 
-.notification {
-  position: fixed;
-  top: 32px;
-  right: 32px;
-  min-width: 320px;
-  max-width: 90vw;
-  background: #fff;
-  color: var(--text-color);
-  padding: 1rem 1.2rem;
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  transform: translateX(120%) scale(0.98);
-  transition: transform 0.3s cubic-bezier(.4,1.4,.6,1), opacity 0.3s;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 3px solid var(--secondary-color);
-  box-sizing: border-box;
-  text-align: left;
-  opacity: 0.98;
-}
-.notification.critical {
-  border-color: #e53935 !important;
-  background: #fff5f5;
-}
-.notification.secondary {
-  border-color: var(--secondary-color) !important;
-  background: #f7f7ff;
-}
-.notification.warning {
-  border-color: var(--warning-color) !important;
-  background: #fffbe6;
-}
-.notification.error {
-  border-color: var(--error-color) !important;
-  background: #fff5f5;
-}
-.notification.show {
-  transform: translateX(0) scale(1);
-  opacity: 1;
-}
-.notification-icon {
-  font-size: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2.2rem;
-}
-.notification > div {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 2px;
-  width: 100%;
-}
-.notification strong {
-  font-size: 1.08rem;
-  font-weight: 600;
-  margin-bottom: 2px;
-  text-align: left;
-}
-.notification p {
-  margin: 0;
-  font-size: 0.98rem;
-  text-align: left;
-  word-break: break-all;
-}
-.border-primary {
-  border-color: var(--primary-color) !important;
-}
-.border-secondary {
-  border-color: var(--secondary-color) !important;
-}
 .connection-info {
   margin-top: 1rem;
   padding: 1rem;
@@ -844,15 +700,6 @@ onMounted(() => {
 .quality-fair { color: var(--warning-color); }
 .quality-poor { color: var(--error-color); }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-@media (max-width: 600px) {
-  .notification {
-    right: 8px;
-    top: 8px;
-    min-width: 180px;
-    padding: 0.7rem 0.7rem;
-    font-size: 0.98rem;
-  }
-}
 @media (max-width: 480px) {
   .realtime-container { padding: 0.5rem; }
   .header-section { padding: 0.8rem 0; }
@@ -875,53 +722,6 @@ onMounted(() => {
 @media (max-width: 600px) {
   .back-btn { position: static; transform: none; margin-bottom: 1rem; }
 }
-/* 多条通知弹窗堆叠样式 */
-.notification-stack {
-  position: fixed;
-  top: 0;
-  right: 32px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  pointer-events: none;
-}
-.notification-stack .notification {
-  pointer-events: auto;
-}
-
-/* 固定通知弹窗宽度和字体 */
-.notification {
-  min-width: 320px;
-  max-width: 320px;
-  font-size: 0.92rem;
-  padding: 0.7rem 1rem;
-}
-.notification strong {
-  font-size: 1rem;
-}
-.notification p {
-  font-size: 0.92rem;
-}
-
-@media (max-width: 600px) {
-  .notification-stack {
-    right: 8px;
-    top: 8px;
-  }
-  .notification {
-    min-width: 180px;
-    max-width: 90vw;
-    font-size: 0.88rem;
-    padding: 0.6rem 0.7rem;
-  }
-  .notification strong {
-    font-size: 0.95rem;
-  }
-  .notification p {
-    font-size: 0.88rem;
-  }
-}
 
 /* 安卓端悬浮返回按钮样式 */
 /* 保证返回按钮为正圆 */
@@ -930,7 +730,7 @@ onMounted(() => {
   top: 20px;
   left: 20px;
   z-index: 2100;
-  background: #fff;
+  background: var(--card-bg);
   color: var(--primary-color);
   border: 1.5px solid var(--primary-color);
   border-radius: 50%;

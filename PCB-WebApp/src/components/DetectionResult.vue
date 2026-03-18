@@ -1,93 +1,91 @@
 <template>
-  <div class="detection-result">
-    <div class="result-header">
-      <h3>
-        <span class="material-icons">analytics</span>
-        检测结果
-      </h3>
-      <button @click="$emit('clear')" class="clear-result-btn">
-        <span class="material-icons">refresh</span>
-        重新检测
-      </button>
-    </div>
-
-    <div class="result-content">
-      <!-- 图片显示区域 -->
-      <div class="image-section">
-        <div class="image-container" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
-          @touchend="handleTouchEnd" @mousedown="handleMouseDown" @mousemove="handleMouseMove" @mouseup="handleMouseUp"
-          @mouseleave="handleMouseUp" @wheel="handleWheel" @dblclick="resetZoom">
-          <img :src="imageUrl" alt="检测图片" class="result-image" :style="imageStyle">
-        </div>
-        <div class="image-info">
-          <p class="image-note">
-            <span class="material-icons">info</span>
-            图片已自动标注检测到的缺陷位置
-          </p>
-        </div>
+  <div style="width: 100%;">
+    <div class="detection-result">
+      <div class="result-header">
+        <h3>
+          <span class="material-icons">analytics</span>
+          检测结果
+        </h3>
       </div>
 
-      <!-- 检测统计 -->
-      <div class="summary-section">
-        <div class="summary-card">
-          <div class="summary-item">
-            <span class="material-icons summary-icon" :class="result.summary.total_defects ? 'defect' : 'good'">
-              {{ result.summary.total_defects ? 'error' : 'check' }}
-            </span>
-            <div>
-              <span class="summary-number">{{ result.summary.total_defects }}</span>
-              个缺陷
-            </div>
+      <div class="result-content">
+        <!-- 图片显示区域 -->
+        <div class="image-section">
+          <div class="image-container" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
+            @touchend="handleTouchEnd" @mousedown="handleMouseDown" @mousemove="handleMouseMove"
+            @mouseup="handleMouseUp" @mouseleave="handleMouseUp" @wheel="handleWheel" @dblclick="resetZoom">
+            <img :src="imageUrl" alt="检测图片" class="result-image" :style="imageStyle">
+          </div>
+          <div class="image-info">
+            <p class="image-note">
+              <span class="material-icons">info</span>
+              图片已自动标注检测到的缺陷位置
+            </p>
           </div>
         </div>
 
-        <!-- 缺陷类型分布 -->
-        <div v-if="defectTypes.length > 0" class="defect-types">
-          <h4>缺陷类型分布</h4>
-          <div class="defect-list">
-            <div v-for="[type, count] in defectTypes" :key="type" class="defect-item">
-              <span class="defect-name">{{ type }}</span>
-              <span class="defect-count">{{ count }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 详细检测结果 -->
-      <div class="details-section">
-        <h4>详细检测结果</h4>
-        <div v-if="result.detection_results.length === 0" class="no-defects">
-          <span class="material-icons">check_circle</span>
-          <p>未检测到缺陷</p>
-        </div>
-        <div v-else class="detection-list">
-          <div v-for="(detection, index) in result.detection_results" :key="index" class="detection-item"
-            @click="focusOnDetection(detection.bbox)">
-            <div class="detection-header">
-              <span class="detection-class">{{ detection.class }}</span>
-              <span class="detection-confidence">
-                置信度: {{ (detection.confidence * 100).toFixed(1) }}%
+        <!-- 检测统计 -->
+        <div class="summary-section">
+          <div class="summary-card">
+            <div class="summary-item">
+              <span class="material-icons summary-icon" :class="result.summary.total_defects ? 'defect' : 'good'">
+                {{ result.summary.total_defects ? 'error' : 'check' }}
               </span>
+              <div>
+                <span class="summary-number">{{ result.summary.total_defects }}</span>
+                个缺陷
+              </div>
             </div>
-            <div class="detection-details">
-              <div class="detection-bbox">
-                <span class="material-icons">crop_free</span>
-                <span>
-                  位置 [{{detection.bbox.map(v => Math.round(v)).join(', ')}}]
+          </div>
+
+          <!-- 缺陷类型分布 -->
+          <div v-if="defectTypes.length > 0" class="defect-types">
+            <h4>缺陷类型分布</h4>
+            <div class="defect-list">
+              <div v-for="[type, count] in defectTypes" :key="type" class="defect-item">
+                <span class="defect-name">{{ type }}</span>
+                <span class="defect-count">{{ count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 详细检测结果 -->
+        <div class="details-section">
+          <h4>详细检测结果</h4>
+          <div v-if="result.detection_results.length === 0" class="no-defects">
+            <span class="material-icons">check_circle</span>
+            <p>未检测到缺陷</p>
+          </div>
+          <div v-else class="detection-list">
+            <div v-for="(detection, index) in result.detection_results" :key="index" class="detection-item"
+              @click="focusOnDetection(detection.bbox)">
+              <div class="detection-header">
+                <span class="detection-class">{{ detection.class }}</span>
+                <span class="detection-confidence">
+                  置信度: {{ (detection.confidence * 100).toFixed(1) }}%
                 </span>
               </div>
-              <div class="confidence-bar">
-                <div class="confidence-fill" :style="{ width: (detection.confidence * 100) + '%' }"></div>
+              <div class="detection-details">
+                <div class="detection-bbox">
+                  <span class="material-icons">crop_free</span>
+                  <span>
+                    位置 [{{detection.bbox.map(v => Math.round(v)).join(', ')}}]
+                  </span>
+                </div>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" :style="{ width: (detection.confidence * 100) + '%' }"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 时间戳 -->
-      <div class="timestamp">
-        <span class="material-icons">schedule</span>
-        检测时间: {{ formatTimestamp(result.timestamp) }}
+        <!-- 时间戳 -->
+        <div class="timestamp">
+          <span class="material-icons">schedule</span>
+          检测时间: {{ formatTimestamp(result.timestamp) }}
+        </div>
       </div>
     </div>
   </div>
@@ -103,12 +101,7 @@ interface Props {
   imageUrl: string;
 }
 
-interface Emits {
-  (e: 'clear'): void;
-}
-
 const props = defineProps<Props>();
-defineEmits<Emits>();
 
 // 图片缩放相关状态
 const scale = ref(1);
@@ -221,9 +214,15 @@ const handleWheel = (e: WheelEvent) => {
 
 // 重置缩放
 const resetZoom = () => {
+  const image = document.querySelector('.result-image') as HTMLImageElement;
+  if (!image) return;
+  image.style.transition = 'transform 0.3s ease';
   scale.value = 1;
   translateX.value = 0;
   translateY.value = 0;
+  setTimeout(() => {
+    image.style.transition = 'none';
+  }, 300);
 };
 
 // 聚焦到指定的检测区域
@@ -274,7 +273,7 @@ const focusOnDetection = (bbox: number[]) => {
   const offsetX = (centerX - imageNaturalWidth / 2) * scaleFactor;
   const offsetY = (centerY - imageNaturalHeight / 2) * scaleFactor
 
-  image.style.transition = 'transform 1.0s ease, opacity 0.3s ease';
+  image.style.transition = 'transform 1.0s ease';
   // 设置平移与缩放
   container.scrollIntoView({ behavior: 'smooth', block: 'center' });
   translateX.value = -offsetX;
@@ -335,6 +334,8 @@ const formatTimestamp = (timestamp: string) => {
   background: var(--surface-color);
   border-radius: 12px;
   padding: 3%;
+  max-width: 1000px;
+  margin: auto;
 }
 
 .result-header {
@@ -349,7 +350,7 @@ const formatTimestamp = (timestamp: string) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0;
+  margin: 0.2em;
   color: var(--text-color);
 }
 
@@ -534,7 +535,7 @@ const formatTimestamp = (timestamp: string) => {
 }
 
 .detection-item {
-  padding: 1rem;
+  padding: 0.8rem;
   background: var(--background-color);
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -628,6 +629,20 @@ const formatTimestamp = (timestamp: string) => {
 
   .timestamp {
     order: 4;
+  }
+}
+
+@media (min-width: 768px) {
+  .detection-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .detection-item {
+    flex: 1 1 300px;
+    min-width: 300px;
   }
 }
 </style>

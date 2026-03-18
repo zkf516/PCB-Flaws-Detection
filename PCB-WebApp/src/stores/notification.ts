@@ -11,7 +11,7 @@ export const useNotificationStore = defineStore("notification", () => {
   const notifications = ref<Notification[]>([]);
   let nextId:number = 1;
 
-  function showNotification(text: string, type: "info" | "check" | "error") {
+  function showNotification(text: string, type: "info" | "check" | "error" | "warning") {
     const notification: Notification = {
       text,
       type,

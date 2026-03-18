@@ -29,7 +29,7 @@ const nStore = useNotificationStore();
 }
 
 @media (max-width: 768px) {
-  .container-mobile {
+  .noticontainer {
     bottom: 50px;
     left: 0;
     right: 0;
@@ -45,6 +45,14 @@ const nStore = useNotificationStore();
 
 .error {
   color: #F44336;
+}
+
+.warning {
+  color: #FF9800;
+}
+
+.info {
+  color: var(--primary-color);
 }
 
 .noti-bubble {

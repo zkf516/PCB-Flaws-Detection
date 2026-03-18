@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { usePCBStore } from '../stores/pcb';
 import CameraUpload from '../components/CameraUpload.vue';
 import DetectionResult from '../components/DetectionResult.vue';
@@ -46,6 +46,10 @@ const handleClearResult = () => {
     uploadedImageUrl.value = '';
   }
 };
+
+onMounted(()=>{
+  handleClearResult();
+})
 </script>
 
 <template>
@@ -69,8 +73,14 @@ const handleClearResult = () => {
     </div>
 
     <!-- 检测结果 -->
+    <div class="back-section" v-if="pcbStore.hasResult && pcbStore.currentResult">
+      <button @click="handleClearResult" class="back-btn">
+        <span class="material-icons">arrow_back</span>
+        返回主页
+      </button>
+    </div>
     <div v-if="pcbStore.hasResult && pcbStore.currentResult" class="result-section">
-      <DetectionResult :result="pcbStore.currentResult" :imageUrl="uploadedImageUrl" @clear="handleClearResult" />
+      <DetectionResult :result="pcbStore.currentResult" :imageUrl="uploadedImageUrl" />
     </div> <!-- 加载状态 -->
     <div v-if="pcbStore.isLoading" class="loading-overlay">
       <div class="loading-content">
