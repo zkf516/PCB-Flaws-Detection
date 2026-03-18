@@ -96,13 +96,23 @@ export const usePCBStore = defineStore('pcb', () => {
     selectedDate.value = date;
   };
 
-  const nextPage = () => {
+  const nextPage = async () => {
     currentPage.value++;
-    loadHistories({
-      page: currentPage.value,
-      limit: itemsPerPage.value,
-      date: selectedDate.value || undefined,
-    });
+    try {
+      await loadHistories({
+        page: currentPage.value,
+        limit: itemsPerPage.value,
+        date: selectedDate.value || undefined,
+      });
+
+      if (histories.value.length === 0) {
+        prevPage();
+        notificationStore.showNotification('没有更多结果', 'info');
+      }
+    } catch (err) {
+      prevPage();
+      throw err;
+    }
   };
 
   const prevPage = () => {

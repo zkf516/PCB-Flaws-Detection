@@ -15,10 +15,10 @@ const handleImageUpload = async (file: File) => {
       URL.revokeObjectURL(uploadedImageUrl.value)
     }
     uploadedImageUrl.value = URL.createObjectURL(file)
-    
+
     // 上传图片进行检测
     await pcbStore.uploadImage(file)
-    
+
     // 检测成功后，清理blob URL并使用标注后的图片URL
     if (pcbStore.currentResult) {
       if (uploadedImageUrl.value.startsWith('blob:')) {
@@ -50,77 +50,44 @@ const handleClearResult = () => {
 
 <template>
   <div class="home-container">
-        <div class="header-section">
-          <h1>
-            <span class="material-icons">precision_manufacturing</span>
-            PCB 缺陷检测
-          </h1>
-          <p class="subtitle">拍照或上传PCB图片，AI智能检测电路板缺陷</p>        </div>
+    <div class="header-section">
+      <h1>
+        <span class="material-icons">precision_manufacturing</span>
+        PCB 缺陷检测
+      </h1>
+      <p class="subtitle">拍照或上传PCB图片</p>
+      <p class="subtitle">智能检测电路板缺陷</p>
+    </div>
 
-        <!-- 上传区域 -->
-        <div v-if="!pcbStore.hasResult" class="upload-section">
-          <CameraUpload 
-            :isUploading="pcbStore.isLoading"
-            @upload="handleImageUpload"
-          />
-        </div>
+    <!-- 上传区域 -->
+    <div v-if="!pcbStore.hasResult" class="upload-section">
+      <button class="realtime-btn" @click="$router.push('/realtime')">
+        <span class="material-icons">monitor_heart</span>
+        实时监测
+      </button>
+      <CameraUpload :isUploading="pcbStore.isLoading" @upload="handleImageUpload" />
+    </div>
 
-        <!-- 检测结果 -->
-        <div v-if="pcbStore.hasResult && pcbStore.currentResult" class="result-section">
-          <DetectionResult 
-            :result="pcbStore.currentResult"
-            :imageUrl="uploadedImageUrl"
-            @clear="handleClearResult"
-          />
-        </div>        <!-- 加载状态 -->
-        <div v-if="pcbStore.isLoading" class="loading-overlay">
-          <div class="loading-content">
-            <span class="material-icons spinning">hourglass_empty</span>
-            <p>AI正在分析PCB图片...</p>
-          </div>
-        </div>
+    <!-- 检测结果 -->
+    <div v-if="pcbStore.hasResult && pcbStore.currentResult" class="result-section">
+      <DetectionResult :result="pcbStore.currentResult" :imageUrl="uploadedImageUrl" @clear="handleClearResult" />
+    </div> <!-- 加载状态 -->
+    <div v-if="pcbStore.isLoading" class="loading-overlay">
+      <div class="loading-content">
+        <span class="material-icons spinning">hourglass_empty</span>
+        <p>正在分析PCB图片...</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .home-container {
   margin: 0 auto;
-  padding: 2rem 1rem;
-  padding-bottom: 4rem;
+  padding: 3rem 1rem;
+  padding-bottom: 0rem;
 }
 
-.header-section {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.header-section h1 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 0 0 1rem 0;
-  color: var(--text-color);
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-@media (max-width: 768px) {
-  .header-section h1 {
-    font-size: 2rem;
-  }
-}
-
-.header-section h1 .material-icons {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
-  .header-section h1 .material-icons {
-    font-size: 2rem;
-  }
-}
 
 .subtitle {
   color: var(--text-secondary);
@@ -161,28 +128,6 @@ const handleClearResult = () => {
 .error-content p {
   margin: 0 0 1rem 0;
   line-height: 1.5;
-}
-
-.retry-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s ease;
-}
-
-.retry-btn:hover {
-  background: #b91c1c;
-}
-
-.retry-btn .material-icons {
-  font-size: 1rem;
 }
 
 .upload-section {
@@ -232,8 +177,40 @@ const handleClearResult = () => {
   animation: spin 1s linear infinite;
 }
 
+.realtime-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 0.9rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0 auto 1.5rem auto;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(74,0,224,0.08);
+  transition: all 0.2s;
+  width: 100%;
+  max-width: 500px;
+}
+.realtime-btn .material-icons {
+  font-size: 1.5em;
+}
+.realtime-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74,0,224,0.18);
+}
+
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

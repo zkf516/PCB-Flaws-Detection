@@ -38,7 +38,7 @@
         <div class="upload-placeholder">
           <span class="material-icons upload-icon">cloud_upload</span>
           <p>点击或拖拽图片到此处</p>
-          <p class="upload-hint">支持 JPG、PNG、BMP 格式，最大10MB</p>
+          <p class="upload-hint">支持 JPG、PNG、BMP 格式，最大20MB</p>
         </div>
       </div>
     </div>
@@ -142,7 +142,6 @@ const selectFromGallery = async () => {
     }
 
     // 检查权限
-    console.log('检查相册权限...')
     const hasPermission = await CameraService.checkPermissions()
     if (!hasPermission) {
       console.log('权限不足，请求权限...')
@@ -197,10 +196,10 @@ const validateFile = (file: File): boolean => {
     return false
   }
   
-  // 检查文件大小 (最大10MB)
-  const maxSize = 10 * 1024 * 1024
+  // 检查文件大小 (最大20MB)
+  const maxSize = 20 * 1024 * 1024
   if (file.size > maxSize) {
-    notificationStore.showNotification('图片文件大小不能超过10MB', 'error')
+    notificationStore.showNotification('图片文件大小不能超过20MB', 'error')
     return false
   }
   
@@ -281,21 +280,11 @@ onUnmounted(cleanup)
   color: white;
 }
 
-.camera-btn:hover:not(:disabled) {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-}
 
 .gallery-btn {
   background: transparent;
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
-}
-
-.gallery-btn:hover:not(:disabled) {
-  background: var(--primary-color);
-  color: white;
-  transform: translateY(-2px);
 }
 
 .camera-btn:disabled, .gallery-btn:disabled {
@@ -343,7 +332,7 @@ onUnmounted(cleanup)
   background: var(--surface-color);
 }
 
-.upload-area:hover {
+.upload-area:active {
   border-color: var(--primary-color);
   background: var(--surface-hover-bg);
 }
@@ -406,7 +395,7 @@ onUnmounted(cleanup)
   transition: background 0.2s ease;
 }
 
-.clear-btn:hover {
+.clear-btn:active {
   background: rgba(0, 0, 0, 0.8);
 }
 
@@ -431,7 +420,7 @@ onUnmounted(cleanup)
   width: 100%;
 }
 
-.upload-btn:hover:not(:disabled) {
+.upload-btn:active:not(:disabled) {
   background: var(--primary-hover);
   transform: translateY(-2px);
 }

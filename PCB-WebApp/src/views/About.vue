@@ -121,46 +121,18 @@
 </template>
 
 <style scoped>
+.header-section {
+  text-align: center;
+}
+
 .about-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 1rem;
   min-height: calc(100vh - 3em);
   padding-bottom: 4rem;
 }
 
-.header-section {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.header-section h1 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 0;
-  color: var(--text-color);
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-@media (max-width: 768px) {
-  .header-section h1 {
-    font-size: 2rem;
-  }
-}
-
-.header-section h1 .material-icons {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
-  .header-section h1 .material-icons {
-    font-size: 2rem;
-  }
-}
 
 .content-section {
   display: flex;
@@ -189,21 +161,14 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
-  margin: 2rem 0;
 }
 
 .feature-card {
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
   transition: all 0.3s ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .feature-icon {
@@ -242,8 +207,7 @@
   align-items: flex-start;
   gap: 1rem;
   padding: 1.5rem;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
+  background: var(--card-bg);
   border-radius: 8px;
 }
 
@@ -287,11 +251,11 @@
 
 .step {
   display: flex;
+  justify-content: center;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 2rem;
   padding: 1.5rem;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
+  background: var(--card-bg);
   border-radius: 12px;
 }
 
@@ -313,6 +277,7 @@
   color: var(--text-color);
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;
+  width: 100%;
 }
 
 .step-content p {

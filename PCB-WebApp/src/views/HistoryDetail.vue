@@ -4,8 +4,9 @@
     <div class="back-section">
       <button @click="goBack" class="back-btn">
         <span class="material-icons">arrow_back</span>
-        返回历史记录
-      </button>    </div>
+        返回列表
+      </button>
+    </div>
 
     <!-- 加载状态 -->
     <div v-if="pcbStore.isLoading" class="loading-message">
@@ -27,11 +28,7 @@
       </div>
 
       <!-- 使用检测结果组件 -->
-      <DetectionResult 
-        :result="pcbStore.selectedHistory"
-        :imageUrl="imageUrl"
-        @clear="goBack"
-      />
+      <DetectionResult :result="pcbStore.selectedHistory" :imageUrl="imageUrl" @clear="goBack" />
     </div>
 
     <!-- 未找到记录 -->
@@ -102,13 +99,15 @@ onMounted(() => {
 .history-detail-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2rem 3%;
   min-height: calc(100vh - 3em);
-  padding-bottom: 4rem;
 }
 
 .back-section {
-  margin-bottom: 2rem;
+  position: absolute;
+  top: 2rem;
+  left: 1rem;
+  z-index: 10;
 }
 
 .back-btn {
@@ -119,6 +118,7 @@ onMounted(() => {
   background: var(--surface-color);
   color: var(--text-color);
   border: 1px solid var(--border-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -126,7 +126,7 @@ onMounted(() => {
   font-size: 1rem;
 }
 
-.back-btn:hover {
+.back-btn:active {
   background: var(--surface-hover-bg);
   transform: translateY(-2px);
 }
@@ -169,7 +169,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin: 0 0 1rem 0;
+  margin: 3em 0 1rem 0;
   color: var(--text-color);
   font-size: 2rem;
   font-weight: 600;
@@ -235,7 +235,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
